@@ -195,8 +195,8 @@ void MJPEGStreamer::on_readyRead()
         }
     break;
     case StreamState::Streaming: {
-        int ind_start_bytes = m_buffer.indexOf("\xff\xd8");
-        int ind_end_bytes = m_buffer.indexOf("\xff\xd9");
+        int ind_start_bytes = m_buffer.lastIndexOf("\xff\xd8");
+        int ind_end_bytes = m_buffer.lastIndexOf("\xff\xd9");
         if(ind_start_bytes != -1 && ind_end_bytes != -1) {
             if(ind_start_bytes < ind_end_bytes){
                 QByteArray image_data = m_buffer.mid(ind_start_bytes, ind_end_bytes + 2);
