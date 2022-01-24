@@ -26,7 +26,6 @@ MJPEGStreamer::~MJPEGStreamer()
 
 void MJPEGStreamer::start()
 {
-    m_state = StreamState::Stopped;
     m_socket->connectToHost(m_url.host(), m_url.port(80));
 }
 
@@ -139,10 +138,6 @@ void MJPEGStreamer::on_connected()
         QString request_with_digest;
         if(!(request_with_digest = generate_auth_digest(buffer_str)).isEmpty()) {
             m_socket->write(request_with_digest.toUtf8());
-            /**
-             * @todo: m_state must be set to StreamState::Streaming
-             * when we receive a 200 status, not here
-             */
         }
     }
     break;
@@ -158,13 +153,19 @@ void MJPEGStreamer::on_disconnected()
         m_pixmap.fill(QColor("black"));
         setPixmap(m_pixmap);
     }
-    m_buffer.clear();
+    if(m_state == StreamState::Authorizing) {
+        start();
+    }
+    else {
+        m_buffer.clear();
+    }
 }
 
 void MJPEGStreamer::on_readyRead()
 {
-    m_buffer += m_socket->readAll();
+    m_buffer += m_socket->readAll();    
     QString sbuffer = QString::fromUtf8(m_buffer);
+
     switch (m_state) {
     case StreamState::Stopped: {
         if(sbuffer.contains("401")) {
@@ -177,9 +178,6 @@ void MJPEGStreamer::on_readyRead()
     }
     break;
     case StreamState::Authorizing:
-        /**
-         * @todo if response here is HTTP 200, then we will set m_state to StreamState::Streaming
-         */
         if(sbuffer.contains("200")) {
             m_state = StreamState::Streaming;
         }
