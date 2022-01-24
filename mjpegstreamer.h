@@ -23,7 +23,6 @@ private:
     QTcpSocket * m_socket;
     QUrl m_url;
     QByteArray m_buffer;
-    QPixmap m_pixmap;
     int64_t m_state;
 signals:
     void disconnected();

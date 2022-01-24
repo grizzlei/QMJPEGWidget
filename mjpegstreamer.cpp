@@ -16,6 +16,12 @@ MJPEGStreamer::MJPEGStreamer(QWidget * parent)
     connect(m_socket, SIGNAL(connected()), this, SLOT(on_connected()));
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(on_disconnected()));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(on_readyRead()));
+
+    /** clear video surface */ {
+        QPixmap pmap(width(), height());
+        pmap.fill(Qt::black);
+        setPixmap(pmap);
+    }
 }
 
 MJPEGStreamer::~MJPEGStreamer()
@@ -150,8 +156,9 @@ void MJPEGStreamer::on_disconnected()
 {
     qDebug() << "disconnected.";
     /** clear video surface */ {
-        m_pixmap.fill(QColor("black"));
-        setPixmap(m_pixmap);
+        QPixmap pmap(width(), height());
+        pmap.fill(Qt::black);
+        setPixmap(pmap);
     }
     if(m_state == StreamState::Authorizing) {
         start();
@@ -194,8 +201,9 @@ void MJPEGStreamer::on_readyRead()
             if(ind_start_bytes < ind_end_bytes){
                 QByteArray image_data = m_buffer.mid(ind_start_bytes, ind_end_bytes + 2);
                 m_buffer = m_buffer.mid(ind_end_bytes+2);
-                if(m_pixmap.loadFromData(image_data, "JPEG")) {
-                    setPixmap(m_pixmap.scaled(m_pixmap.size(), Qt::KeepAspectRatio));
+                QPixmap pmap;
+                if(pmap.loadFromData(image_data, "JPEG")) {
+                    setPixmap(pmap.scaled(pmap.size(), Qt::KeepAspectRatio));
                 }
             }
         }
