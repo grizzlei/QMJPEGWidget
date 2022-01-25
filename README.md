@@ -1,6 +1,8 @@
 ### Qt MJPEG Streamer widget [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 _Hasan Karaman, karaman.hasan@yahoo.com, 2022_
 
+MJPEGStreamer is a very simple to use MJPEG surface for Qt5 (and Qt4 but with minor tweaks).
+
 Example use:
 ```c++
 MJPEGStreamer * stream = new MJPEGStreamer();

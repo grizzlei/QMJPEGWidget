@@ -1,6 +1,7 @@
 #include "mjpegstreamer.h"
 
 #include <QBuffer>
+#include <QImageReader>
 #include <QCryptographicHash>
 
 MJPEGStreamer::MJPEGStreamer(QWidget * parent)
@@ -161,6 +162,10 @@ void MJPEGStreamer::on_disconnected()
         setPixmap(pmap);
     }
     if(m_state == StreamState::Authorizing) {
+        /** this means we got rejected by server once,
+         * now we will try to reconnect with a stronger
+         * authentication challenge.
+         */
         start();
     }
     else {
@@ -176,7 +181,10 @@ void MJPEGStreamer::on_readyRead()
     switch (m_state) {
     case StreamState::Stopped: {
         if(sbuffer.contains("401")) {
-            // so we can try one more time with digest authentication
+            /** we switch to authorization state so we can
+             * try one more time with digest authentication.
+             * see: on_disconnected()
+             */
             m_state = StreamState::Authorizing;
         }
         else if(sbuffer.contains("200")) {
@@ -205,6 +213,8 @@ void MJPEGStreamer::on_readyRead()
                 if(pmap.loadFromData(image_data, "JPEG")) {
                     setPixmap(pmap.scaled(pmap.size(), Qt::KeepAspectRatio));
                 }
+                else
+                    qDebug() << "error: bad data or JPEG is not supported. currently supported types are: " << QImageReader::supportedImageFormats();
             }
         }
     }
