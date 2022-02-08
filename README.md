@@ -2,7 +2,7 @@
 _Hasan Karaman, karaman.hasan@yahoo.com, 2022_
 
 MJPEGStreamer is a easy to use MJPEG surface for Qt GUI applications. Written using Qt5 but can be easily used with Qt4 with minor tweaks.
-It uses pure `QTcpSocket`, and no external libraries are needed. Currently supports basic and digest authentication. 
+It uses pure `QTcpSocket` and no external libraries are needed. Currently supports basic and digest authentication. 
 
 Example use (dynamic creation):
 ```c++
